@@ -1,0 +1,84 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12",
+  "title": "CodeQualityAuditOutput",
+  "description": "Schema for code-quality-audit skill JSON output. Every field is required unless marked nullable.",
+  "type": "object",
+  "required": ["summary", "scores", "metrics", "worst_issues"],
+  "properties": {
+    "summary": {
+      "type": "object",
+      "required": ["overall_grade", "overall_score", "tech_debt_hours", "tech_debt_calculation", "one_liner", "confidence", "input_completeness"],
+      "properties": {
+        "overall_grade":         { "type": "string", "description": "Letter grade A+, A, A−, B+, B, B−, C+, C, C−, D+, D, F, F−" },
+        "overall_score":         { "type": "number", "minimum": 0, "maximum": 100 },
+        "tech_debt_hours":       { "type": "number", "minimum": 0 },
+        "tech_debt_calculation": { "type": "string", "description": "Step-by-step arithmetic showing how debt hours were derived" },
+        "one_liner":             { "type": "string", "description": "Single sentence executive summary of the project quality" },
+        "confidence":            { "type": "string", "enum": ["High", "Medium", "Low"] },
+        "input_completeness":    { "type": "string", "description": "Summary of what tool data was available vs. missing" }
+      }
+    },
+    "scores": {
+      "type": "object",
+      "required": ["code_logic", "architecture", "stability", "security", "performance", "operability", "maintainability_index", "modularity_cohesion"],
+      "properties": {
+        "code_logic":             { "$ref": "#/$defs/DimensionScore" },
+        "architecture":           { "$ref": "#/$defs/DimensionScore" },
+        "stability":              { "$ref": "#/$defs/DimensionScore" },
+        "security":               { "$ref": "#/$defs/DimensionScore" },
+        "performance":            { "$ref": "#/$defs/DimensionScore" },
+        "operability":            { "$ref": "#/$defs/DimensionScore" },
+        "maintainability_index":  { "$ref": "#/$defs/DimensionScore" },
+        "modularity_cohesion":    { "$ref": "#/$defs/DimensionScore" }
+      }
+    },
+    "metrics": {
+      "type": "object",
+      "required": ["loc_total", "sloc", "comment_density_pct", "avg_function_loc", "p95_function_loc", "duplication_pct", "circular_dependencies", "test_coverage_pct"],
+      "properties": {
+        "loc_total":            { "type": ["number", "null"] },
+        "sloc":                 { "type": ["number", "null"], "description": "Source Lines of Code (excluding blanks and comments)" },
+        "comment_density_pct":  { "type": ["number", "null"] },
+        "avg_function_loc":     { "type": ["number", "null"] },
+        "p95_function_loc":     { "type": ["number", "null"], "description": "95th-percentile function size in LOC" },
+        "duplication_pct":      { "type": ["number", "null"] },
+        "circular_dependencies":{ "type": ["number", "null"] },
+        "test_coverage_pct":    { "type": ["number", "null"], "description": "Line coverage %; null if no test data available" }
+      }
+    },
+    "worst_issues": {
+      "type": "array",
+      "maxItems": 10,
+      "items": { "$ref": "#/$defs/Issue" }
+    }
+  },
+  "$defs": {
+    "DimensionScore": {
+      "type": "object",
+      "required": ["score", "grade", "status", "evidence", "confidence"],
+      "properties": {
+        "score":      { "type": ["number", "null"], "minimum": 0, "maximum": 100, "description": "null only if dimension is entirely inapplicable" },
+        "grade":      { "type": ["string", "null"], "description": "Letter grade; null if score is null" },
+        "status":     { "type": "string", "enum": ["Excellent", "Good", "Fair", "Poor", "Critical", "N/A"] },
+        "evidence":   { "type": "string", "description": "Specific observations that justify the score" },
+        "confidence": { "type": "string", "enum": ["High", "Medium", "Low"] }
+      }
+    },
+    "Issue": {
+      "type": "object",
+      "required": ["rank", "category", "location", "severity", "current_metric", "target_metric", "estimated_hours", "before_code", "after_code", "rationale"],
+      "properties": {
+        "rank":            { "type": "number" },
+        "category":        { "type": "string", "description": "One of: Code Logic, Architecture, Stability, Security, Performance, Operability" },
+        "location":        { "type": "string", "description": "file:line or file range; use 'unknown' only if truly unlocatable" },
+        "severity":        { "type": "string", "enum": ["Critical", "High", "Medium", "Low"] },
+        "current_metric":  { "type": "string", "description": "Observed value, e.g. 'CC = 47'" },
+        "target_metric":   { "type": "string", "description": "Goal value, e.g. 'CC ≤ 10'" },
+        "estimated_hours": { "type": "number" },
+        "before_code":     { "type": "string", "description": "Representative problematic code snippet" },
+        "after_code":      { "type": "string", "description": "Suggested refactored code snippet" },
+        "rationale":       { "type": "string", "description": "Why this is a problem and why the fix works" }
+      }
+    }
+  }
+}
