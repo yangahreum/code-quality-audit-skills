@@ -12,13 +12,30 @@ A Claude Code skill that audits codebase quality across 8 dimensions, estimates 
 
 ## Installation
 
-Copy this folder to your Claude Code skills directory:
-
 ```bash
+# 1. 스킬 설치
 cp -r code-quality-audit ~/.claude/skills/code-quality-audit
+
+# 2. 권장 분석 도구 설치 (lizard + trivy)
+bash ~/.claude/skills/code-quality-audit/scripts/install-tools.sh
 ```
 
 Claude Code will automatically detect it. No restart required.
+
+### Required Tools
+
+도구 없이도 스킬은 동작하지만, 점수 신뢰도가 낮아집니다. **lizard + trivy** 설치를 권장합니다.
+
+| 도구 | 용도 | 설치 | 권장 |
+|------|------|------|:----:|
+| lizard | 범용 복잡도 (Java/Python/JS 등) | `pip install lizard` | ✅ |
+| trivy | 취약점 + 시크릿 스캔 | `brew install trivy` | ✅ |
+| radon | Python 복잡도 + MI | `pip install radon` | optional |
+| bandit | Python 보안 | `pip install bandit` | optional |
+| madge | JS/TS 의존성 그래프 | `npm install -g madge` | optional |
+| gocyclo | Go 복잡도 | `go install github.com/fzipp/gocyclo/cmd/gocyclo@latest` | optional |
+
+> 분석 중 도구 누락이 감지되면 Claude가 `install-tools.sh` 실행을 자동으로 제안합니다. 도구 미설치 시에는 코드를 직접 읽어 분석하며 점수에 `(estimated, confidence: Low)` 가 표시됩니다.
 
 ## Usage
 
@@ -46,6 +63,8 @@ How much technical debt does this codebase have?
 
 옵션을 명시하지 않으면 프로젝트 전체를 분석합니다.
 
+
+
 ## Directory Structure
 
 ```
@@ -57,6 +76,7 @@ code-quality-audit/
 │   ├── sqale-debt-model.md       # Technical debt unit cost table
 │   └── output-schemas.json       # JSON output schema
 ├── scripts/
+│   ├── install-tools.sh          # One-time setup: installs lizard + trivy
 │   ├── collect-metrics.sh        # Runs Lizard / radon / ESLint per language
 │   ├── deps-graph.sh             # Runs madge / jdeps / pydeps for dependency analysis
 │   └── security-scan.sh          # Runs Trivy / Bandit / npm audit

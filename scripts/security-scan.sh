@@ -32,7 +32,7 @@ r['trivy'] = json.loads('''$TRIVY''')
 print(json.dumps(r))
 " 2>/dev/null || echo "$RESULTS")
 else
-  echo '{"warning": "trivy not installed — install from https://aquasecurity.github.io/trivy/"}' >&2
+  echo '{"warning": "trivy not installed — run: bash scripts/install-tools.sh"}' >&2
   RESULTS=$(echo "$RESULTS" | python3 -c "
 import json, sys
 r = json.load(sys.stdin)

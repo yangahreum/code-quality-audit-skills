@@ -58,6 +58,7 @@ Follow these steps in order:
    - `scripts/collect-metrics.sh <project-path>` → complexity + LOC metrics (JSON)
    - `scripts/deps-graph.sh <project-path>` → dependency/circular-dependency data (JSON)
    - `scripts/security-scan.sh <project-path>` → vulnerability + secret scan (JSON)
+   - If any script returns `"error": "lizard not installed"` or `"warning": "trivy not installed"`, offer to run `bash scripts/install-tools.sh` to install the recommended tools, then re-run the failed script.
 3. **Direct code review** — read key files to catch patterns tools miss (god classes, layer violations, empty catches, hardcoded secrets, N+1 patterns)
 4. **Score all 8 dimensions** — see Dimensions below; cite evidence for every score; assign confidence
 5. **Calculate technical debt** — use `reference/sqale-debt-model.md`; show your arithmetic

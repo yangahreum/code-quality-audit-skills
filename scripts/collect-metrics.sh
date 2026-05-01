@@ -23,7 +23,8 @@ run_lizard_fallback() {
   if command -v lizard &>/dev/null; then
     lizard . --json 2>/dev/null || echo '{"error": "lizard failed"}'
   else
-    echo '{"error": "lizard not installed — run: pip install lizard"}'
+    echo '{"error": "lizard not installed — run: bash scripts/install-tools.sh"}' >&2
+    echo '{"error": "lizard not installed"}'
   fi
 }
 
